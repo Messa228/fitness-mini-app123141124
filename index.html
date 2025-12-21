@@ -146,6 +146,15 @@
 
 <script>
 Telegram.WebApp.ready();
+  
+const MY_ID = 1463723399; 
+
+const user = Telegram.WebApp.initDataUnsafe.user;
+
+if (!user || user.id !== MY_ID) {
+  document.body.innerHTML = '⛔ Доступ запрещён';
+}
+
 
 // вкладки
 function openTab(id) {
@@ -221,3 +230,4 @@ function backToWorkout() {
 
 </body>
 </html>
+
