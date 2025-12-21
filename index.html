@@ -1,153 +1,145 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta charset="UTF-8">
+
+  <!-- АВТОМАСШТАБ ПОД УСТРОЙСТВО -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Fitness Mini App</title>
 
+  <!-- Telegram -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 10px;
-      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
     }
 
-    .tabs {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 10px;
-    }
-
-    .tab {
-      padding: 10px;
-      background: #ddd;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .tab.active {
-      background: #4CAF50;
-      color: white;
-    }
-
-    .section {
+    /* ОБЩИЕ ЭКРАНЫ */
+    .screen {
       display: none;
-      background: white;
-      padding: 10px;
-      border-radius: 5px;
+      min-height: 100vh;
+      padding: 15px;
+      box-sizing: border-box;
     }
 
-    .section.active {
+    .screen.active {
       display: block;
     }
 
-    .food-item {
-      margin-bottom: 8px;
+    /* ГЛАВНЫЙ ЭКРАН */
+    .home {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .home-block {
+      flex: 1;
+      margin: 8px 0;
+      border-radius: 12px;
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
     }
 
+    .food-block { background: #4CAF50; }
+    .workout-block { background: #FF9800; }
+    .stats-block { background: #2196F3; }
+
+    /* КНОПКА НАЗАД */
+    .back {
+      margin-bottom: 10px;
+      cursor: pointer;
+      color: #555;
+    }
+
+    /* ЕДА */
+    .food-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .food-item input {
+      margin-right: 10px;
+    }
+
     .water-box {
-      margin-top: 15px;
+      margin-top: 20px;
       padding-top: 10px;
       border-top: 1px solid #ccc;
     }
 
-    button {
-      padding: 5px 10px;
+    input, button {
+      font-size: 16px;
+      padding: 6px;
       margin-top: 5px;
     }
 
+    button {
+      cursor: pointer;
+    }
+
+    /* ТРЕНИРОВКИ */
     .day {
+      background: #e0e0e0;
+      padding: 12px;
+      border-radius: 8px;
       margin-bottom: 10px;
       cursor: pointer;
-      background: #eee;
-      padding: 8px;
-      border-radius: 5px;
+      font-size: 16px;
     }
 
     .exercise {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
-     /* ГЛАВНЫЙ ЭКРАН */
-.home {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.card {
-  height: 120px;
-  border-radius: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  font-weight: bold;
-  color: white;
-  cursor: pointer;
-}
-
-.food-card {
-  background: #4CAF50;
-}
-
-.workout-card {
-  background: #FF9800;
-}
-
-.stats-card {
-  background: #2196F3;
-}
-
-/* ОБЩАЯ АДАПТАЦИЯ */
-.section {
-  min-height: calc(100vh - 20px);
-}
   </style>
 </head>
 
 <body>
 
 <!-- ГЛАВНЫЙ ЭКРАН -->
-<div id="home" class="section active home">
-  <div class="card food-card" onclick="openSection('food')">
-    🍽 ЕДА
+<div id="home" class="screen active home">
+  <div class="home-block food-block" onclick="openScreen('food')">
+    🥗 ЕДА
   </div>
-
-  <div class="card workout-card" onclick="openSection('workout')">
+  <div class="home-block workout-block" onclick="openScreen('workout')">
     🏋️ ТРЕНИРОВКИ
   </div>
-
-  <div class="card stats-card" onclick="openSection('stats')">
+  <div class="home-block stats-block" onclick="openScreen('stats')">
     📊 СТАТИСТИКА
   </div>
 </div>
 
-
 <!-- ЕДА -->
-<div id="food" class="section active">
+<div id="food" class="screen">
+  <div class="back" onclick="goHome()">← Назад</div>
   <h3>Еда на сегодня</h3>
 
   <div class="food-item">
-    <input type="checkbox" onchange="toggleFood('oatmeal')" id="oatmeal">
-    <span onclick="openRecipe('Овсянка')">Овсянка с бананом</span>
+    <input type="checkbox" id="oatmeal" onchange="toggleFood('oatmeal')">
+    <span>Овсянка с бананом</span>
   </div>
 
   <div class="food-item">
-    <input type="checkbox" onchange="toggleFood('chicken')" id="chicken">
-    <span onclick="openRecipe('Курица')">Курица с рисом</span>
+    <input type="checkbox" id="chicken" onchange="toggleFood('chicken')">
+    <span>Курица с рисом</span>
   </div>
 
   <div class="food-item">
-    <input type="checkbox" onchange="toggleFood('curd')" id="curd">
-    <span onclick="openRecipe('Творог')">Творог</span>
+    <input type="checkbox" id="curd" onchange="toggleFood('curd')">
+    <span>Творог</span>
   </div>
-  <button onclick="goHome()">← На главный экран</button>
 
-  <!-- ВОДА -->
   <div class="water-box">
     <h4>Вода</h4>
     <p>Цель: <b>2000 мл</b></p>
@@ -159,18 +151,20 @@
     <p>Осталось: <span id="waterLeft">2000</span> мл</p>
   </div>
 </div>
+
 <!-- ТРЕНИРОВКИ -->
-<div id="workout" class="section">
+<div id="workout" class="screen">
+  <div class="back" onclick="goHome()">← Назад</div>
   <h3>Тренировки</h3>
 
   <div class="day" onclick="openDay('monday')">Понедельник</div>
   <div class="day" onclick="openDay('wednesday')">Среда</div>
   <div class="day" onclick="openDay('friday')">Пятница</div>
 </div>
-  <button onclick="goHome()">← На главный экран</button>
 
-<!-- ДЕНЬ ТРЕНИРОВКИ -->
-<div id="day" class="section">
+<!-- ДЕНЬ -->
+<div id="day" class="screen">
+  <div class="back" onclick="openScreen('workout')">← Назад</div>
   <h3 id="dayTitle"></h3>
 
   <div class="exercise">
@@ -184,182 +178,78 @@
     <input type="number" id="squat">
     <button onclick="saveExercise('squat')">+</button>
   </div>
-
-  <button onclick="resetDay()">🔄 Сбросить день</button>
-  <br><br>
-  <button onclick="backToWorkout()">← Назад</button>
 </div>
-
 
 <!-- СТАТИСТИКА -->
-<div id="stats" class="section">
-  <h3>Вес</h3>
-
-  <input type="number" id="weightInput" placeholder="Вес (кг)">
-  <button onclick="saveWeight()">Сохранить</button>
-
-  <canvas id="weightChart" width="300" height="200" style="margin-top:15px;"></canvas>
+<div id="stats" class="screen">
+  <div class="back" onclick="goHome()">← Назад</div>
+  <h3>Статистика</h3>
+  <p>Будет добавлена позже</p>
 </div>
-  <button onclick="goHome()">← На главный экран</button>
-
 
 <script>
-  function openSection(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+Telegram.WebApp.ready();
+
+/* ===== НАВИГАЦИЯ ===== */
+function openScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
 function goHome() {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.getElementById('home').classList.add('active');
+  openScreen('home');
 }
 
-// ===== СТАТИСТИКА ВЕСА =====
-
-let weights = JSON.parse(localStorage.getItem('weights')) || [];
-
-function saveWeight() {
-  const value = Number(document.getElementById('weightInput').value);
-  if (!value) return;
-
-  const date = new Date().toLocaleDateString();
-
-  weights.push({ date, value });
-  localStorage.setItem('weights', JSON.stringify(weights));
-
-  document.getElementById('weightInput').value = '';
-  drawChart();
-}
-
-function drawChart() {
-  const canvas = document.getElementById('weightChart');
-  const ctx = canvas.getContext('2d');
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  if (weights.length === 0) return;
-
-  const values = weights.map(w => w.value);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-
-  const padding = 20;
-  const stepX = (canvas.width - padding * 2) / (weights.length - 1 || 1);
-
-  ctx.beginPath();
-  ctx.strokeStyle = '#4CAF50';
-
-  weights.forEach((w, i) => {
-    const x = padding + i * stepX;
-    const y = canvas.height - padding -
-      ((w.value - min) / (max - min || 1)) * (canvas.height - padding * 2);
-
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-
-    ctx.fillRect(x - 2, y - 2, 4, 4);
-  });
-
-  ctx.stroke();
-}
-
-drawChart();
-
-// ===== ЕДА: СОХРАНЕНИЕ ГАЛОЧЕК =====
-
+/* ===== ЕДА ===== */
 function toggleFood(name) {
-  const checked = document.getElementById(name).checked;
-  localStorage.setItem('food_' + name, checked);
+  localStorage.setItem('food_' + name, document.getElementById(name).checked);
 }
 
-function loadFood() {
-  const foods = ['oatmeal', 'chicken', 'curd'];
+['oatmeal','chicken','curd'].forEach(f => {
+  const saved = localStorage.getItem('food_' + f);
+  if (saved === 'true') document.getElementById(f).checked = true;
+});
 
-  foods.forEach(name => {
-    const saved = localStorage.getItem('food_' + name);
-    if (saved === 'true') {
-      document.getElementById(name).checked = true;
-    }
-  });
-}
-
-loadFood();
-Telegram.WebApp.ready();
-  
-const MY_ID = 1463723399; 
-
-const user = Telegram.WebApp.initDataUnsafe.user;
-
-if (!user || user.id !== MY_ID) {
-  document.body.innerHTML = '⛔ Доступ запрещён';
-}
-
-
-// ВОДА
+/* ===== ВОДА ===== */
 let water = Number(localStorage.getItem('water')) || 0;
-const waterGoal = 2000;
+const goal = 2000;
 
 function updateWater() {
   waterDone.innerText = water;
-  waterLeft.innerText = Math.max(waterGoal - water, 0);
+  waterLeft.innerText = Math.max(goal - water, 0);
 }
 
 function addWater() {
-  const value = Number(waterInput.value);
-  if (!value) return;
-  water += value;
+  const v = Number(waterInput.value);
+  if (!v) return;
+  water += v;
   localStorage.setItem('water', water);
   waterInput.value = '';
   updateWater();
 }
 updateWater();
 
-// РЕЦЕПТЫ
-function openRecipe(name) {
-  food.classList.remove('active');
-  recipe.classList.add('active');
-
-  recipeTitle.innerText = name;
-
-  const recipes = {
-    'Овсянка': 'Овсянка 60г\nБанан 100г\nМёд 10г',
-    'Курица': 'Курица 150г\nРис 100г\nОвощи',
-    'Творог': 'Творог 200г\nЯгоды'
-  };
-
-  recipeText.innerText = recipes[name];
-}
-
-function backToFood() {
-  recipe.classList.remove('active');
-  food.classList.add('active');
-}
-
-// ТРЕНИРОВКИ
+/* ===== ТРЕНИРОВКИ ===== */
 let currentDay = '';
 
 function openDay(day) {
-  workout.classList.remove('active');
-  dayDiv = document.getElementById('day');
-  dayDiv.classList.add('active');
   currentDay = day;
   dayTitle.innerText = day;
+  openScreen('day');
+
+  ['bench','squat'].forEach(ex => {
+    const saved = localStorage.getItem(day + '_' + ex);
+    if (saved) document.getElementById(ex).value = saved;
+  });
 }
 
 function saveExercise(ex) {
-  const value = document.getElementById(ex).value;
-  if (!value) return;
-  localStorage.setItem(currentDay + '_' + ex, value);
-  alert('Сохранено!');
-}
-
-function backToWorkout() {
-  day.classList.remove('active');
-  workout.classList.add('active');
+  const v = document.getElementById(ex).value;
+  if (!v) return;
+  localStorage.setItem(currentDay + '_' + ex, v);
+  alert('Сохранено');
 }
 </script>
 
 </body>
 </html>
-
-
