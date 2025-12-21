@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta charset="UTF-8">
   <title>Fitness Mini App</title>
 
@@ -70,17 +71,61 @@
     .exercise {
       margin-bottom: 10px;
     }
+     /* ГЛАВНЫЙ ЭКРАН */
+.home {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.card {
+  height: 120px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+}
+
+.food-card {
+  background: #4CAF50;
+}
+
+.workout-card {
+  background: #FF9800;
+}
+
+.stats-card {
+  background: #2196F3;
+}
+
+/* ОБЩАЯ АДАПТАЦИЯ */
+.section {
+  min-height: calc(100vh - 20px);
+}
   </style>
 </head>
 
 <body>
 
-<!-- ВКЛАДКИ -->
-<div class="tabs">
-  <div class="tab active" onclick="openTab('food')">Еда</div>
-  <div class="tab" onclick="openTab('workout')">Тренировки</div>
-  <div class="tab" onclick="openTab('stats')">Статистика</div>
+<!-- ГЛАВНЫЙ ЭКРАН -->
+<div id="home" class="section active home">
+  <div class="card food-card" onclick="openSection('food')">
+    🍽 ЕДА
+  </div>
+
+  <div class="card workout-card" onclick="openSection('workout')">
+    🏋️ ТРЕНИРОВКИ
+  </div>
+
+  <div class="card stats-card" onclick="openSection('stats')">
+    📊 СТАТИСТИКА
+  </div>
 </div>
+
 
 <!-- ЕДА -->
 <div id="food" class="section active">
@@ -100,6 +145,7 @@
     <input type="checkbox" onchange="toggleFood('curd')" id="curd">
     <span onclick="openRecipe('Творог')">Творог</span>
   </div>
+  <button onclick="goHome()">← На главный экран</button>
 
   <!-- ВОДА -->
   <div class="water-box">
@@ -121,6 +167,7 @@
   <div class="day" onclick="openDay('wednesday')">Среда</div>
   <div class="day" onclick="openDay('friday')">Пятница</div>
 </div>
+  <button onclick="goHome()">← На главный экран</button>
 
 <!-- ДЕНЬ ТРЕНИРОВКИ -->
 <div id="day" class="section">
@@ -153,9 +200,20 @@
 
   <canvas id="weightChart" width="300" height="200" style="margin-top:15px;"></canvas>
 </div>
+  <button onclick="goHome()">← На главный экран</button>
 
 
 <script>
+  function openSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('home').classList.add('active');
+}
+
 // ===== СТАТИСТИКА ВЕСА =====
 
 let weights = JSON.parse(localStorage.getItem('weights')) || [];
@@ -237,14 +295,6 @@ if (!user || user.id !== MY_ID) {
 }
 
 
-// вкладки
-function openTab(id) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById(id).classList.add('active');
-}
-
 // ВОДА
 let water = Number(localStorage.getItem('water')) || 0;
 const waterGoal = 2000;
@@ -311,4 +361,5 @@ function backToWorkout() {
 
 </body>
 </html>
+
 
