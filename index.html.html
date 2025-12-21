@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Fitness Mini App</title>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      background: #f5f5f5;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 10px;
+    }
+
+    .tab {
+      padding: 10px;
+      background: #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .section {
+      display: none;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .food-item {
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .water-box {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
+    }
+
+    button {
+      padding: 5px 10px;
+      margin-top: 5px;
+    }
+
+    .day {
+      margin-bottom: 10px;
+      cursor: pointer;
+      background: #eee;
+      padding: 8px;
+      border-radius: 5px;
+    }
+
+    .exercise {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ВКЛАДКИ -->
+<div class="tabs">
+  <div class="tab active" onclick="openTab('food')">Еда</div>
+  <div class="tab" onclick="openTab('workout')">Тренировки</div>
+  <div class="tab" onclick="openTab('stats')">Статистика</div>
+</div>
+
+<!-- ЕДА -->
+<div id="food" class="section active">
+  <h3>Еда на сегодня</h3>
+
+  <div class="food-item" onclick="openRecipe('Овсянка')">🍽 Овсянка с бананом</div>
+  <div class="food-item" onclick="openRecipe('Курица')">🍽 Курица с рисом</div>
+  <div class="food-item" onclick="openRecipe('Творог')">🍽 Творог</div>
+
+  <!-- ВОДА -->
+  <div class="water-box">
+    <h4>Вода</h4>
+    <p>Цель: <b>2000 мл</b></p>
+
+    <input type="number" id="waterInput" placeholder="Сколько выпил (мл)">
+    <button onclick="addWater()">+</button>
+
+    <p>Выпито: <span id="waterDone">0</span> мл</p>
+    <p>Осталось: <span id="waterLeft">2000</span> мл</p>
+  </div>
+</div>
+
+<!-- ЭКРАН РЕЦЕПТА -->
+<div id="recipe" class="section">
+  <h3 id="recipeTitle"></h3>
+  <p id="recipeText"></p>
+  <button onclick="backToFood()">← Назад</button>
+</div>
+
+<!-- ТРЕНИРОВКИ -->
+<div id="workout" class="section">
+  <h3>Тренировки</h3>
+
+  <div class="day" onclick="openDay('monday')">Понедельник</div>
+  <div class="day" onclick="openDay('wednesday')">Среда</div>
+  <div class="day" onclick="openDay('friday')">Пятница</div>
+</div>
+
+<!-- ДЕНЬ ТРЕНИРОВКИ -->
+<div id="day" class="section">
+  <h3 id="dayTitle"></h3>
+
+  <div class="exercise">
+    Жим лёжа:
+    <input type="number" id="bench">
+    <button onclick="saveExercise('bench')">+</button>
+  </div>
+
+  <div class="exercise">
+    Присед:
+    <input type="number" id="squat">
+    <button onclick="saveExercise('squat')">+</button>
+  </div>
+
+  <button onclick="backToWorkout()">← Назад</button>
+</div>
+
+<!-- СТАТИСТИКА -->
+<div id="stats" class="section">
+  <h3>Статистика</h3>
+  <p>Добавим позже</p>
+</div>
+
+<script>
+Telegram.WebApp.ready();
+
+// вкладки
+function openTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+
+// ВОДА
+let water = Number(localStorage.getItem('water')) || 0;
+const waterGoal = 2000;
+
+function updateWater() {
+  waterDone.innerText = water;
+  waterLeft.innerText = Math.max(waterGoal - water, 0);
+}
+
+function addWater() {
+  const value = Number(waterInput.value);
+  if (!value) return;
+  water += value;
+  localStorage.setItem('water', water);
+  waterInput.value = '';
+  updateWater();
+}
+updateWater();
+
+// РЕЦЕПТЫ
+function openRecipe(name) {
+  food.classList.remove('active');
+  recipe.classList.add('active');
+
+  recipeTitle.innerText = name;
+
+  const recipes = {
+    'Овсянка': 'Овсянка 60г\nБанан 100г\nМёд 10г',
+    'Курица': 'Курица 150г\nРис 100г\nОвощи',
+    'Творог': 'Творог 200г\nЯгоды'
+  };
+
+  recipeText.innerText = recipes[name];
+}
+
+function backToFood() {
+  recipe.classList.remove('active');
+  food.classList.add('active');
+}
+
+// ТРЕНИРОВКИ
+let currentDay = '';
+
+function openDay(day) {
+  workout.classList.remove('active');
+  dayDiv = document.getElementById('day');
+  dayDiv.classList.add('active');
+  currentDay = day;
+  dayTitle.innerText = day;
+}
+
+function saveExercise(ex) {
+  const value = document.getElementById(ex).value;
+  if (!value) return;
+  localStorage.setItem(currentDay + '_' + ex, value);
+  alert('Сохранено!');
+}
+
+function backToWorkout() {
+  day.classList.remove('active');
+  workout.classList.add('active');
+}
+</script>
+
+</body>
+</html>
