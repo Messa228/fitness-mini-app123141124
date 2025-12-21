@@ -86,9 +86,20 @@
 <div id="food" class="section active">
   <h3>Еда на сегодня</h3>
 
-  <div class="food-item" onclick="openRecipe('Овсянка')">🍽 Овсянка с бананом</div>
-  <div class="food-item" onclick="openRecipe('Курица')">🍽 Курица с рисом</div>
-  <div class="food-item" onclick="openRecipe('Творог')">🍽 Творог</div>
+  <div class="food-item">
+    <input type="checkbox" onchange="toggleFood('oatmeal')" id="oatmeal">
+    <span onclick="openRecipe('Овсянка')">Овсянка с бананом</span>
+  </div>
+
+  <div class="food-item">
+    <input type="checkbox" onchange="toggleFood('chicken')" id="chicken">
+    <span onclick="openRecipe('Курица')">Курица с рисом</span>
+  </div>
+
+  <div class="food-item">
+    <input type="checkbox" onchange="toggleFood('curd')" id="curd">
+    <span onclick="openRecipe('Творог')">Творог</span>
+  </div>
 
   <!-- ВОДА -->
   <div class="water-box">
@@ -102,14 +113,6 @@
     <p>Осталось: <span id="waterLeft">2000</span> мл</p>
   </div>
 </div>
-
-<!-- ЭКРАН РЕЦЕПТА -->
-<div id="recipe" class="section">
-  <h3 id="recipeTitle"></h3>
-  <p id="recipeText"></p>
-  <button onclick="backToFood()">← Назад</button>
-</div>
-
 <!-- ТРЕНИРОВКИ -->
 <div id="workout" class="section">
   <h3>Тренировки</h3>
@@ -145,6 +148,25 @@
 </div>
 
 <script>
+// ===== ЕДА: СОХРАНЕНИЕ ГАЛОЧЕК =====
+
+function toggleFood(name) {
+  const checked = document.getElementById(name).checked;
+  localStorage.setItem('food_' + name, checked);
+}
+
+function loadFood() {
+  const foods = ['oatmeal', 'chicken', 'curd'];
+
+  foods.forEach(name => {
+    const saved = localStorage.getItem('food_' + name);
+    if (saved === 'true') {
+      document.getElementById(name).checked = true;
+    }
+  });
+}
+
+loadFood();
 Telegram.WebApp.ready();
   
 const MY_ID = 1463723399; 
@@ -230,4 +252,5 @@ function backToWorkout() {
 
 </body>
 </html>
+
 
