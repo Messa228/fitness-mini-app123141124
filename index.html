@@ -143,11 +143,67 @@
 
 <!-- СТАТИСТИКА -->
 <div id="stats" class="section">
-  <h3>Статистика</h3>
-  <p>Добавим позже</p>
+  <h3>Вес</h3>
+
+  <input type="number" id="weightInput" placeholder="Вес (кг)">
+  <button onclick="saveWeight()">Сохранить</button>
+
+  <canvas id="weightChart" width="300" height="200" style="margin-top:15px;"></canvas>
 </div>
 
+
 <script>
+// ===== СТАТИСТИКА ВЕСА =====
+
+let weights = JSON.parse(localStorage.getItem('weights')) || [];
+
+function saveWeight() {
+  const value = Number(document.getElementById('weightInput').value);
+  if (!value) return;
+
+  const date = new Date().toLocaleDateString();
+
+  weights.push({ date, value });
+  localStorage.setItem('weights', JSON.stringify(weights));
+
+  document.getElementById('weightInput').value = '';
+  drawChart();
+}
+
+function drawChart() {
+  const canvas = document.getElementById('weightChart');
+  const ctx = canvas.getContext('2d');
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (weights.length === 0) return;
+
+  const values = weights.map(w => w.value);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+
+  const padding = 20;
+  const stepX = (canvas.width - padding * 2) / (weights.length - 1 || 1);
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#4CAF50';
+
+  weights.forEach((w, i) => {
+    const x = padding + i * stepX;
+    const y = canvas.height - padding -
+      ((w.value - min) / (max - min || 1)) * (canvas.height - padding * 2);
+
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+
+    ctx.fillRect(x - 2, y - 2, 4, 4);
+  });
+
+  ctx.stroke();
+}
+
+drawChart();
+
 // ===== ЕДА: СОХРАНЕНИЕ ГАЛОЧЕК =====
 
 function toggleFood(name) {
@@ -252,5 +308,4 @@ function backToWorkout() {
 
 </body>
 </html>
-
 
