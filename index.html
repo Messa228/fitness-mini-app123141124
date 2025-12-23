@@ -2,18 +2,13 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-
-  <!-- АВТОМАСШТАБ ПОД ЛЮБОЕ УСТРОЙСТВО -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Fitness Mini App</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -21,12 +16,10 @@
       background: #f5f5f5;
     }
 
-    /* ===== ОБЩИЕ ЭКРАНЫ ===== */
     .screen {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       width: 100%;
       height: 100vh;
       padding: 16px;
@@ -34,93 +27,110 @@
       overflow-y: auto;
     }
 
-    .screen.active {
-      display: block;
-    }
+    .screen.active { display: block; }
 
-    h2 {
-      margin-top: 0;
-    }
+    h2, h3 { margin-top: 0; }
 
     button {
       padding: 10px;
+      margin-top: 8px;
       font-size: 16px;
-      margin-top: 10px;
-      cursor: pointer;
+      width: 100%;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      font-size: 14px;
     }
 
     /* ===== ГЛАВНЫЙ ЭКРАН ===== */
     #home {
       display: flex;
       flex-direction: column;
-      width: 100%;
       height: 100vh;
     }
 
     .home-btn {
       flex: 1;
+      background: white;
+      border-bottom: 1px solid #ddd;
+      font-size: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      background: white;
-      border-bottom: 1px solid #ddd;
       cursor: pointer;
     }
 
-    .home-btn:last-child {
-      border-bottom: none;
+    /* ===== ЕДА ===== */
+    .meal {
+      background: white;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
     }
 
-    /* ===== ЕДА ===== */
-    .food-item {
-      margin-bottom: 10px;
-      font-size: 18px;
+    .dish {
+      background: #eee;
+      padding: 8px;
+      margin-top: 8px;
+      white-space: pre-line;
+      border-radius: 4px;
     }
 
     .water-box {
       margin-top: 20px;
-      padding-top: 10px;
       border-top: 1px solid #ccc;
+      padding-top: 10px;
     }
 
-    /* ===== ТРЕНИРОВКИ ===== */
-    .exercise {
-      margin-bottom: 10px;
-    }
+    .exercise { margin-bottom: 10px; }
   </style>
 </head>
 
 <body>
 
-<!-- ================= ГЛАВНЫЙ ЭКРАН ================= -->
+<!-- ===== HOME ===== -->
 <div id="home" class="screen active">
   <div class="home-btn" onclick="openScreen('food')">🍽 ЕДА</div>
   <div class="home-btn" onclick="openScreen('workout')">🏋️ ТРЕНИРОВКИ</div>
   <div class="home-btn" onclick="openScreen('stats')">📊 СТАТИСТИКА</div>
 </div>
 
-<!-- ================= ЕДА ================= -->
+<!-- ===== ЕДА ===== -->
 <div id="food" class="screen">
   <h2>Еда</h2>
 
-  <div class="food-item">
-    <input type="checkbox" id="oatmeal" onchange="saveFood('oatmeal')">
-    Овсянка с бананом
+  <div class="meal">
+    <h3>🍳 Завтрак</h3>
+    <div id="breakfastList"></div>
+
+    <input id="breakfastName" placeholder="Название блюда">
+    <textarea id="breakfastComp" placeholder="Компоненты и граммовки"></textarea>
+    <button onclick="addDish('breakfast')">Добавить</button>
   </div>
 
-  <div class="food-item">
-    <input type="checkbox" id="chicken" onchange="saveFood('chicken')">
-    Курица с рисом
+  <div class="meal">
+    <h3>🍲 Обед</h3>
+    <div id="lunchList"></div>
+
+    <input id="lunchName" placeholder="Название блюда">
+    <textarea id="lunchComp" placeholder="Компоненты и граммовки"></textarea>
+    <button onclick="addDish('lunch')">Добавить</button>
   </div>
 
-  <div class="food-item">
-    <input type="checkbox" id="curd" onchange="saveFood('curd')">
-    Творог
+  <div class="meal">
+    <h3>🍽 Ужин</h3>
+    <div id="dinnerList"></div>
+
+    <input id="dinnerName" placeholder="Название блюда">
+    <textarea id="dinnerComp" placeholder="Компоненты и граммовки"></textarea>
+    <button onclick="addDish('dinner')">Добавить</button>
   </div>
 
   <div class="water-box">
-    <h3>Вода</h3>
+    <h3>💧 Вода</h3>
     <p>Цель: 2000 мл</p>
 
     <input type="number" id="waterInput" placeholder="мл">
@@ -133,28 +143,27 @@
   <button onclick="goHome()">← Назад</button>
 </div>
 
-<!-- ================= ТРЕНИРОВКИ ================= -->
+<!-- ===== ТРЕНИРОВКИ ===== -->
 <div id="workout" class="screen">
-  <h2>Тренировка</h2>
+  <h2>Тренировки</h2>
 
   <div class="exercise">
     Жим лёжа:
-    <input type="number" id="bench">
+    <input id="bench" type="number">
     <button onclick="saveExercise('bench')">+</button>
   </div>
 
   <div class="exercise">
     Присед:
-    <input type="number" id="squat">
+    <input id="squat" type="number">
     <button onclick="saveExercise('squat')">+</button>
   </div>
 
   <button onclick="resetTraining()">Сбросить тренировку</button>
-  <br>
   <button onclick="goHome()">← Назад</button>
 </div>
 
-<!-- ================= СТАТИСТИКА ================= -->
+<!-- ===== СТАТИСТИКА ===== -->
 <div id="stats" class="screen">
   <h2>Статистика</h2>
   <p>Добавим позже</p>
@@ -169,20 +178,36 @@ function openScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-
-function goHome() {
-  openScreen('home');
-}
+function goHome() { openScreen('home'); }
 
 /* ===== ЕДА ===== */
-function saveFood(name) {
-  localStorage.setItem('food_' + name, document.getElementById(name).checked);
+function loadMeals(type) {
+  const list = document.getElementById(type + 'List');
+  list.innerHTML = '';
+  const data = JSON.parse(localStorage.getItem(type) || '[]');
+  data.forEach(d => {
+    const div = document.createElement('div');
+    div.className = 'dish';
+    div.innerText = d;
+    list.appendChild(div);
+  });
 }
 
-['oatmeal', 'chicken', 'curd'].forEach(f => {
-  const saved = localStorage.getItem('food_' + f);
-  if (saved === 'true') document.getElementById(f).checked = true;
-});
+function addDish(type) {
+  const name = document.getElementById(type + 'Name').value;
+  const comp = document.getElementById(type + 'Comp').value;
+  if (!name || !comp) return;
+
+  const data = JSON.parse(localStorage.getItem(type) || '[]');
+  data.push(name + '\n' + comp);
+  localStorage.setItem(type, JSON.stringify(data));
+
+  document.getElementById(type + 'Name').value = '';
+  document.getElementById(type + 'Comp').value = '';
+  loadMeals(type);
+}
+
+['breakfast','lunch','dinner'].forEach(loadMeals);
 
 /* ===== ВОДА ===== */
 let water = Number(localStorage.getItem('water')) || 0;
@@ -192,7 +217,6 @@ function updateWater() {
   waterDone.innerText = water;
   waterLeft.innerText = Math.max(goal - water, 0);
 }
-
 function addWater() {
   const v = Number(waterInput.value);
   if (!v) return;
@@ -205,23 +229,16 @@ updateWater();
 
 /* ===== ТРЕНИРОВКИ ===== */
 function saveExercise(name) {
-  const value = document.getElementById(name).value;
-  if (!value) return;
-  localStorage.setItem('exercise_' + name, value);
+  const v = document.getElementById(name).value;
+  if (!v) return;
+  localStorage.setItem('exercise_' + name, v);
   alert('Сохранено');
 }
-
 function resetTraining() {
   localStorage.removeItem('exercise_bench');
   localStorage.removeItem('exercise_squat');
-  bench.value = '';
-  squat.value = '';
-  alert('Тренировка сброшена');
+  alert('Сброшено');
 }
-
-// автозагрузка сохранённых весов
-bench.value = localStorage.getItem('exercise_bench') || '';
-squat.value = localStorage.getItem('exercise_squat') || '';
 </script>
 
 </body>
