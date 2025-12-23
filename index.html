@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 
+<!-- ❌ Запрещаем зум -->
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -15,223 +16,257 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #f2f2f2;
+  background: #f5f5f5;
 }
 
-/* ===== ЭКРАНЫ ===== */
 .screen {
   display: none;
   position: fixed;
   inset: 0;
   padding: 16px;
   overflow-y: auto;
-  background: #f2f2f2;
+  background: #f5f5f5;
 }
+
 .screen.active { display: block; }
 
-/* ===== ГЛАВНАЯ ===== */
+h2 { margin-top: 0; }
+
+.section {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn {
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.add-btn {
+  font-size: 28px;
+  cursor: pointer;
+}
+
+/* ===== HOME ===== */
 #home {
   display: flex;
   flex-direction: column;
 }
+
 .home-btn {
   flex: 1;
-  background: white;
-  margin-bottom: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  border-radius: 12px;
-}
-
-/* ===== КАРТОЧКИ ===== */
-.card {
+  font-size: 26px;
   background: white;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 10px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  cursor: pointer;
 }
 
-/* ===== ГАЛОЧКИ ===== */
-.big-check {
+/* ===== FOOD ===== */
+.food-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-.big-check input {
-  width: 26px;
-  height: 26px;
+  margin-bottom: 8px;
 }
 
-/* ===== КНОПКИ ===== */
-button {
-  width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  margin-top: 10px;
+.food-item input {
+  width: 28px;
+  height: 28px;
+  margin-right: 10px;
+}
+
+.food-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
 }
 
 /* ===== INPUT ===== */
-input {
+input, textarea {
   width: 100%;
   padding: 10px;
   font-size: 16px;
-  margin-top: 6px;
+  margin-bottom: 10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ===== HOME ===== -->
+<!-- ================= HOME ================= -->
 <div id="home" class="screen active">
   <div class="home-btn" onclick="openScreen('food')">🍽 ЕДА</div>
   <div class="home-btn" onclick="openScreen('workout')">🏋️ ТРЕНИРОВКИ</div>
   <div class="home-btn" onclick="openScreen('stats')">📊 СТАТИСТИКА</div>
 </div>
 
-<!-- ===== ЕДА ===== -->
+<!-- ================= FOOD ================= -->
 <div id="food" class="screen">
   <h2>Еда</h2>
 
-  <div id="foodList"></div>
+  <!-- ЗАВТРАК -->
+  <div class="section">
+    <div class="row">
+      <b>Завтрак</b>
+      <span class="add-btn" onclick="openAddFood('breakfast')">➕</span>
+    </div>
+    <div id="breakfastList"></div>
+  </div>
 
-  <button onclick="openScreen('addFood')">➕ Добавить блюдо</button>
-  <button onclick="goHome()">← Назад</button>
+  <!-- ОБЕД -->
+  <div class="section">
+    <div class="row">
+      <b>Обед</b>
+      <span class="add-btn" onclick="openAddFood('lunch')">➕</span>
+    </div>
+    <div id="lunchList"></div>
+  </div>
+
+  <!-- УЖИН -->
+  <div class="section">
+    <div class="row">
+      <b>Ужин</b>
+      <span class="add-btn" onclick="openAddFood('dinner')">➕</span>
+    </div>
+    <div id="dinnerList"></div>
+  </div>
+
+  <!-- ВОДА -->
+  <div class="section">
+    <div class="row">
+      <b>Вода</b>
+      <span onclick="editWater()">✏️</span>
+    </div>
+    <p>Цель: <span id="waterGoal">2000</span> мл</p>
+    <button class="btn" onclick="addWater()">➕ 250 мл</button>
+    <p>Выпито: <span id="waterDone">0</span></p>
+    <p>Осталось: <span id="waterLeft">2000</span></p>
+  </div>
+
+  <button class="btn" onclick="openScreen('home')">← Назад</button>
 </div>
 
-<!-- ===== ДОБАВИТЬ БЛЮДО ===== -->
-<div id="addFood" class="screen">
-  <h2>Новое блюдо</h2>
+<!-- ================= ADD FOOD ================= -->
+<div id="foodAdd" class="screen">
+  <h2>Блюдо</h2>
 
-  <input id="foodName" placeholder="Название">
-  <input id="foodPart" placeholder="Завтрак / Обед / Ужин">
-  <input id="foodComp" placeholder="Состав (курица 150г…)">
+  <input id="foodName" placeholder="Название блюда">
+  <textarea id="foodComp" placeholder="Компоненты и граммовки"></textarea>
 
-  <button onclick="saveFood()">Сохранить</button>
-  <button onclick="openScreen('food')">← Назад</button>
+  <button class="btn" onclick="saveFood()">Сохранить</button>
+  <button class="btn" onclick="openScreen('food')">Отмена</button>
 </div>
 
-<!-- ===== ТРЕНИРОВКИ ===== -->
+<!-- ================= WORKOUT ================= -->
 <div id="workout" class="screen">
   <h2>Тренировки</h2>
-
-  <div id="workoutList"></div>
-
-  <button onclick="openScreen('addExercise')">➕ Добавить упражнение</button>
-  <button onclick="goHome()">← Назад</button>
+  <p>Добавим на следующем шаге</p>
+  <button class="btn" onclick="openScreen('home')">← Назад</button>
 </div>
 
-<!-- ===== ДОБАВИТЬ УПРАЖНЕНИЕ ===== -->
-<div id="addExercise" class="screen">
-  <h2>Новое упражнение</h2>
-
-  <input id="exName" placeholder="Название">
-  <input id="exDay" placeholder="Понедельник / Среда / Пятница">
-  <input id="exSets" type="number" placeholder="Подходы">
-
-  <button onclick="saveExercise()">Сохранить</button>
-  <button onclick="openScreen('workout')">← Назад</button>
-</div>
-
-<!-- ===== СТАТИСТИКА ===== -->
+<!-- ================= STATS ================= -->
 <div id="stats" class="screen">
   <h2>Статистика</h2>
   <p>Добавим позже</p>
-  <button onclick="goHome()">← Назад</button>
+  <button class="btn" onclick="openScreen('home')">← Назад</button>
 </div>
 
 <script>
 Telegram.WebApp.ready();
 
-/* ===== НАВИГАЦИЯ ===== */
+/* ===== NAV ===== */
 function openScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-function goHome() { openScreen('home'); }
 
-/* ===== ЕДА ===== */
+/* ===== FOOD DATA ===== */
+let currentMeal = '';
+let foods = JSON.parse(localStorage.getItem('foods')) || {
+  breakfast: [], lunch: [], dinner: []
+};
+
+function openAddFood(meal) {
+  currentMeal = meal;
+  foodName.value = '';
+  foodComp.value = '';
+  openScreen('foodAdd');
+}
+
 function saveFood() {
-  const food = {
+  foods[currentMeal].push({
+    id: Date.now(),
     name: foodName.value,
-    part: foodPart.value,
     comp: foodComp.value,
-    done: false
-  };
-  const list = JSON.parse(localStorage.getItem('foods') || '[]');
-  list.push(food);
-  localStorage.setItem('foods', JSON.stringify(list));
-  foodName.value = foodPart.value = foodComp.value = '';
+    eaten: false
+  });
+  localStorage.setItem('foods', JSON.stringify(foods));
   renderFood();
   openScreen('food');
 }
 
+function toggleEat(meal, id) {
+  const item = foods[meal].find(f => f.id === id);
+  item.eaten = !item.eaten;
+  localStorage.setItem('foods', JSON.stringify(foods));
+  renderFood();
+}
+
 function renderFood() {
-  foodList.innerHTML = '';
-  const list = JSON.parse(localStorage.getItem('foods') || '[]');
-  list.forEach((f,i) => {
-    foodList.innerHTML += `
-      <div class="card big-check">
-        <input type="checkbox" ${f.done?'checked':''}
-        onchange="toggleFood(${i})">
-        <div>
-          <b>${f.name}</b><br>
-          ${f.part}<br>
-          ${f.comp}
-        </div>
-      </div>`;
+  ['breakfast','lunch','dinner'].forEach(meal => {
+    const box = document.getElementById(meal+'List');
+    box.innerHTML = '';
+    foods[meal].forEach(f => {
+      box.innerHTML += `
+        <div class="food-item">
+          <input type="checkbox" ${f.eaten?'checked':''}
+          onclick="toggleEat('${meal}',${f.id})">
+          ${f.name}
+        </div>`;
+    });
   });
 }
-
-function toggleFood(i){
-  const list = JSON.parse(localStorage.getItem('foods'));
-  list[i].done = !list[i].done;
-  localStorage.setItem('foods', JSON.stringify(list));
-}
-
 renderFood();
 
-/* ===== ТРЕНИРОВКИ ===== */
-function saveExercise(){
-  const ex = {
-    name: exName.value,
-    day: exDay.value,
-    sets: Number(exSets.value),
-    done: 0
-  };
-  const list = JSON.parse(localStorage.getItem('ex') || '[]');
-  list.push(ex);
-  localStorage.setItem('ex', JSON.stringify(list));
-  exName.value = exDay.value = exSets.value = '';
-  renderWorkout();
-  openScreen('workout');
+/* ===== WATER ===== */
+let waterGoal = Number(localStorage.getItem('waterGoal')) || 2000;
+let water = Number(localStorage.getItem('water')) || 0;
+
+function updateWater() {
+  waterGoalSpan = document.getElementById('waterGoal');
+  waterGoalSpan.innerText = waterGoal;
+  waterDone.innerText = water;
+  waterLeft.innerText = Math.max(waterGoal - water, 0);
 }
 
-function renderWorkout(){
-  workoutList.innerHTML='';
-  const list = JSON.parse(localStorage.getItem('ex') || '[]');
-  list.forEach((e,i)=>{
-    workoutList.innerHTML+=`
-    <div class="card">
-      <b>${e.name}</b><br>${e.day}<br>
-      Осталось подходов: ${e.sets - e.done}
-      <button onclick="doSet(${i})">✔ Подход</button>
-    </div>`;
-  });
+function addWater() {
+  water += 250;
+  localStorage.setItem('water', water);
+  updateWater();
 }
 
-function doSet(i){
-  const list = JSON.parse(localStorage.getItem('ex'));
-  if(list[i].done < list[i].sets){
-    list[i].done++;
-    localStorage.setItem('ex', JSON.stringify(list));
-    renderWorkout();
-  }
+function editWater() {
+  const v = prompt('Сколько мл воды в день?', waterGoal);
+  if (!v) return;
+  waterGoal = Number(v);
+  localStorage.setItem('waterGoal', waterGoal);
+  updateWater();
 }
-
-renderWorkout();
+updateWater();
 </script>
 
 </body>
