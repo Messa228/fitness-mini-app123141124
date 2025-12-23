@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- ЗАПРЕТ МАСШТАБИРОВАНИЯ -->
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>Fitness Mini App</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -16,256 +15,234 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #f5f5f5;
+  background: #f2f2f2;
   overscroll-behavior: none;
 }
 
-/* ===== ЭКРАНЫ ===== */
 .screen {
   display: none;
   position: fixed;
   inset: 0;
-  background: #f5f5f5;
   padding: 16px;
+  background: #f2f2f2;
   overflow-y: auto;
 }
+
 .screen.active { display: block; }
 
 h2, h3 { margin-top: 0; }
 
-/* ===== ГЛАВНЫЙ ЭКРАН ===== */
+button {
+  padding: 12px;
+  font-size: 16px;
+  margin-top: 10px;
+  width: 100%;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+/* ===== HOME ===== */
 #home {
   display: flex;
   flex-direction: column;
 }
+
 .home-btn {
   flex: 1;
   background: white;
-  margin-bottom: 8px;
-  border-radius: 12px;
-  font-size: 26px;
+  margin-bottom: 10px;
+  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* ===== КНОПКИ ===== */
-button {
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: none;
-  margin-top: 8px;
+/* ===== CHECKBOX ===== */
+.check {
+  width: 26px;
+  height: 26px;
 }
 
-/* ===== ЕДА ===== */
-.meal {
+/* ===== CARD ===== */
+.card {
   background: white;
   padding: 12px;
-  border-radius: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
 }
 
-.food-item {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.food-item input[type="checkbox"] {
-  width: 28px;
-  height: 28px;
-  margin-right: 10px;
-}
-
-.add-box input, textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 6px;
-  font-size: 16px;
-}
-
-/* ===== ТРЕНИРОВКИ ===== */
-.day {
-  background: white;
-  padding: 12px;
-  border-radius: 12px;
-  margin-bottom: 12px;
-}
-
-.sets {
-  display: flex;
-  gap: 8px;
-  margin-top: 6px;
-}
-.sets input {
-  width: 24px;
-  height: 24px;
+/* ===== EXERCISE ===== */
+.small {
+  color: gray;
+  font-size: 14px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================= HOME ================= -->
+<!-- HOME -->
 <div id="home" class="screen active">
-  <div class="home-btn" onclick="openScreen('food')">🍽 ЕДА</div>
-  <div class="home-btn" onclick="openScreen('workout')">🏋️ ТРЕНИРОВКИ</div>
-  <div class="home-btn" onclick="openScreen('stats')">📊 СТАТИСТИКА</div>
+  <div class="home-btn" onclick="open('food')">🍽 ЕДА</div>
+  <div class="home-btn" onclick="open('workout')">🏋️ ТРЕНИРОВКИ</div>
 </div>
 
-<!-- ================= ЕДА ================= -->
+<!-- FOOD -->
 <div id="food" class="screen">
-<h2>Еда</h2>
+  <h2>Еда</h2>
 
-<div id="meals"></div>
+  <div id="foodList"></div>
 
-<div class="meal">
-<h3>➕ Добавить блюдо</h3>
-<input id="foodName" placeholder="Название">
-<textarea id="foodComp" placeholder="Компоненты и граммы"></textarea>
-<select id="foodMeal">
-  <option value="Завтрак">Завтрак</option>
-  <option value="Обед">Обед</option>
-  <option value="Ужин">Ужин</option>
-</select>
-<button onclick="addFood()">Добавить</button>
+  <button onclick="open('addFood')">➕ Добавить блюдо</button>
+  <button onclick="open('home')">← Назад</button>
 </div>
 
-<button onclick="goHome()">← Назад</button>
+<!-- ADD FOOD -->
+<div id="addFood" class="screen">
+  <h2>Новое блюдо</h2>
+
+  <input id="foodName" placeholder="Название">
+  <input id="foodComp" placeholder="Ингредиенты и граммы">
+  <select id="foodType">
+    <option value="Завтрак">Завтрак</option>
+    <option value="Обед">Обед</option>
+    <option value="Ужин">Ужин</option>
+  </select>
+
+  <button onclick="addFood()">Сохранить</button>
+  <button onclick="open('food')">← Назад</button>
 </div>
 
-<!-- ================= ТРЕНИРОВКИ ================= -->
+<!-- WORKOUT -->
 <div id="workout" class="screen">
-<h2>Тренировки</h2>
+  <h2>Тренировки</h2>
 
-<div id="days"></div>
+  <button onclick="openDay('Понедельник')">Понедельник</button>
+  <button onclick="openDay('Среда')">Среда</button>
+  <button onclick="openDay('Пятница')">Пятница</button>
 
-<div class="day">
-<h3>➕ Добавить упражнение</h3>
-<input id="exName" placeholder="Название">
-<input id="exSets" type="number" placeholder="Подходы">
-<select id="exDay">
-  <option value="Понедельник">Понедельник</option>
-  <option value="Среда">Среда</option>
-  <option value="Пятница">Пятница</option>
-</select>
-<button onclick="addExercise()">Добавить</button>
+  <button onclick="open('home')">← Назад</button>
 </div>
 
-<button onclick="goHome()">← Назад</button>
+<!-- DAY -->
+<div id="day" class="screen">
+  <h2 id="dayTitle"></h2>
+  <div id="exerciseList"></div>
+
+  <button onclick="open('addExercise')">➕ Добавить упражнение</button>
+  <button onclick="open('workout')">← Назад</button>
 </div>
 
-<!-- ================= STATS ================= -->
-<div id="stats" class="screen">
-<h2>Статистика</h2>
-<p>Будет позже</p>
-<button onclick="goHome()">← Назад</button>
+<!-- ADD EX -->
+<div id="addExercise" class="screen">
+  <h2>Новое упражнение</h2>
+
+  <input id="exName" placeholder="Название упражнения">
+  <input id="exSets" type="number" placeholder="Подходы">
+
+  <button onclick="addExercise()">Сохранить</button>
+  <button onclick="open('day')">← Назад</button>
 </div>
 
 <script>
 Telegram.WebApp.ready();
 
-/* ===== НАВИГАЦИЯ ===== */
-function openScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+/* NAV */
+function open(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-function goHome(){ openScreen('home'); }
 
-/* ===== ЕДА ===== */
-let foods = JSON.parse(localStorage.getItem('foods')||'[]');
+/* ===== FOOD ===== */
+let foods = JSON.parse(localStorage.getItem('foods')) || [];
 
-function renderFood(){
-  const meals = {Завтрак:[],Обед:[],Ужин:[]};
-  foods.forEach(f=>meals[f.meal].push(f));
+function renderFood() {
+  const box = document.getElementById('foodList');
+  box.innerHTML = '';
 
-  mealsDiv.innerHTML='';
-  for(let m in meals){
-    const div=document.createElement('div');
-    div.className='meal';
-    div.innerHTML=`<h3>${m}</h3>`;
-    meals[m].forEach((f,i)=>{
-      div.innerHTML+=`
-      <div class="food-item">
-        <input type="checkbox" ${f.done?'checked':''}
+  ['Завтрак','Обед','Ужин'].forEach(type => {
+    box.innerHTML += `<h3>${type}</h3>`;
+    foods.filter(f=>f.type===type).forEach((f,i)=>{
+      box.innerHTML += `
+      <div class="card">
+        <input type="checkbox" class="check"
+        ${f.done?'checked':''}
         onchange="toggleFood(${i})">
-        <div>
-          <b>${f.name}</b><br>
-          <small>${f.comp}</small>
-        </div>
+        <b>${f.name}</b>
+        <div class="small">${f.comp}</div>
       </div>`;
     });
-    mealsDiv.appendChild(div);
-  }
+  });
 }
 
-function addFood(){
-  if(!foodName.value) return;
+function addFood() {
   foods.push({
-    name:foodName.value,
-    comp:foodComp.value,
-    meal:foodMeal.value,
-    done:false
+    name: foodName.value,
+    comp: foodComp.value,
+    type: foodType.value,
+    done: false
   });
-  localStorage.setItem('foods',JSON.stringify(foods));
+  localStorage.setItem('foods', JSON.stringify(foods));
   foodName.value=''; foodComp.value='';
+  open('food');
   renderFood();
 }
 
 function toggleFood(i){
   foods[i].done=!foods[i].done;
-  localStorage.setItem('foods',JSON.stringify(foods));
+  localStorage.setItem('foods', JSON.stringify(foods));
 }
 
 renderFood();
 
-/* ===== ТРЕНИРОВКИ ===== */
-let exercises = JSON.parse(localStorage.getItem('ex')||'[]');
+/* ===== WORKOUT ===== */
+let dayNow='';
+let ex = JSON.parse(localStorage.getItem('ex'))||{};
+
+function openDay(d){
+  dayNow=d;
+  document.getElementById('dayTitle').innerText=d;
+  open('day');
+  renderEx();
+}
 
 function renderEx(){
-  const d={Понедельник:[],Среда:[],Пятница:[]};
-  exercises.forEach(e=>d[e.day].push(e));
-  days.innerHTML='';
-  for(let day in d){
-    const div=document.createElement('div');
-    div.className='day';
-    div.innerHTML=`<h3>${day}</h3>`;
-    d[day].forEach((e,i)=>{
-      let done=e.done||0;
-      let left=e.sets-done;
-      div.innerHTML+=`
-      <b>${e.name}</b> — Осталось ${left}
-      <div class="sets">
-        ${Array.from({length:e.sets}).map((_,s)=>`
-        <input type="checkbox" ${s<done?'checked':''}
-        onchange="toggleSet(${i},${s})">`).join('')}
-      </div>`;
-    });
-    days.appendChild(div);
-  }
+  const box=document.getElementById('exerciseList');
+  box.innerHTML='';
+  (ex[dayNow]||[]).forEach((e,i)=>{
+    box.innerHTML+=`
+    <div class="card">
+      <input type="checkbox" class="check"
+      onchange="doSet(${i})">
+      <b>${e.name}</b>
+      <div class="small">Осталось: ${e.left}</div>
+    </div>`;
+  });
 }
 
 function addExercise(){
-  if(!exName.value||!exSets.value) return;
-  exercises.push({
-    name:exName.value,
-    sets:+exSets.value,
-    day:exDay.value,
-    done:0
+  ex[dayNow]=ex[dayNow]||[];
+  ex[dayNow].push({
+    name: exName.value,
+    total: +exSets.value,
+    left: +exSets.value
   });
-  localStorage.setItem('ex',JSON.stringify(exercises));
+  localStorage.setItem('ex',JSON.stringify(ex));
   exName.value=''; exSets.value='';
+  open('day');
   renderEx();
 }
 
-function toggleSet(i,s){
-  exercises[i].done=s+1;
-  localStorage.setItem('ex',JSON.stringify(exercises));
+function doSet(i){
+  if(ex[dayNow][i].left>0) ex[dayNow][i].left--;
+  localStorage.setItem('ex',JSON.stringify(ex));
   renderEx();
 }
-
-renderEx();
 </script>
 
 </body>
