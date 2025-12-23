@@ -3,30 +3,21 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- ЖЁСТКИЙ КОНТРОЛЬ МАСШТАБА -->
+<!-- ЗАПРЕТ МАСШТАБИРОВАНИЯ -->
 <meta name="viewport"
-      content="width=device-width,
-      initial-scale=1.0,
-      maximum-scale=1.0,
-      user-scalable=no">
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>Fitness Mini App</title>
-
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
+* { box-sizing: border-box; }
 
-html, body {
+body {
   margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
   font-family: Arial, sans-serif;
   background: #f5f5f5;
+  overscroll-behavior: none;
 }
 
 /* ===== ЭКРАНЫ ===== */
@@ -34,230 +25,247 @@ html, body {
   display: none;
   position: fixed;
   inset: 0;
-  padding: 16px;
   background: #f5f5f5;
+  padding: 16px;
   overflow-y: auto;
 }
+.screen.active { display: block; }
 
-.screen.active {
-  display: block;
-}
+h2, h3 { margin-top: 0; }
 
 /* ===== ГЛАВНЫЙ ЭКРАН ===== */
 #home {
   display: flex;
   flex-direction: column;
 }
-
 .home-btn {
   flex: 1;
   background: white;
-  border-bottom: 1px solid #ddd;
-  font-size: 24px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  font-size: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* ===== ЕДА ===== */
-.meal {
-  background: white;
-  padding: 10px;
-  margin-bottom: 16px;
-  border-radius: 8px;
-}
-
-.meal h3 {
-  margin-top: 0;
-}
-
-.food-item {
-  margin-bottom: 6px;
-}
-
-.add-btn {
-  margin-top: 8px;
-}
-
-/* ===== ФОРМА ===== */
-input, textarea {
-  width: 100%;
-  font-size: 16px;
-  padding: 8px;
-  margin-bottom: 8px;
-}
-
-/* ===== ФОКУС (мягкое поведение) ===== */
-.screen:has(input:focus),
-.screen:has(textarea:focus) {
-  padding-bottom: 120px;
 }
 
 /* ===== КНОПКИ ===== */
 button {
   padding: 10px;
   font-size: 16px;
-}
-
-/* ===== ВОДА ===== */
-.water-box {
-  background: white;
-  padding: 10px;
   border-radius: 8px;
+  border: none;
+  margin-top: 8px;
 }
 
-/* ===== ЗАПРЕТ ЗУМА ===== */
-body {
-  touch-action: manipulation;
+/* ===== ЕДА ===== */
+.meal {
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.food-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.food-item input[type="checkbox"] {
+  width: 28px;
+  height: 28px;
+  margin-right: 10px;
+}
+
+.add-box input, textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 6px;
+  font-size: 16px;
+}
+
+/* ===== ТРЕНИРОВКИ ===== */
+.day {
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.sets {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+.sets input {
+  width: 24px;
+  height: 24px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ========== HOME ========== -->
+<!-- ================= HOME ================= -->
 <div id="home" class="screen active">
   <div class="home-btn" onclick="openScreen('food')">🍽 ЕДА</div>
   <div class="home-btn" onclick="openScreen('workout')">🏋️ ТРЕНИРОВКИ</div>
   <div class="home-btn" onclick="openScreen('stats')">📊 СТАТИСТИКА</div>
 </div>
 
-<!-- ========== FOOD ========== -->
+<!-- ================= ЕДА ================= -->
 <div id="food" class="screen">
-  <h2>Еда</h2>
+<h2>Еда</h2>
 
-  <div class="meal">
-    <h3>Завтрак</h3>
-    <div id="breakfast"></div>
-    <button class="add-btn" onclick="openAddFood('breakfast')">➕ Добавить</button>
-  </div>
+<div id="meals"></div>
 
-  <div class="meal">
-    <h3>Обед</h3>
-    <div id="lunch"></div>
-    <button class="add-btn" onclick="openAddFood('lunch')">➕ Добавить</button>
-  </div>
-
-  <div class="meal">
-    <h3>Ужин</h3>
-    <div id="dinner"></div>
-    <button class="add-btn" onclick="openAddFood('dinner')">➕ Добавить</button>
-  </div>
-
-  <div class="water-box">
-    <h3>Вода</h3>
-    <input type="number" id="waterInput" placeholder="мл">
-    <button onclick="addWater()">+</button>
-    <p>Выпито: <span id="waterDone">0</span> мл</p>
-    <p>Осталось: <span id="waterLeft">2000</span> мл</p>
-  </div>
-
-  <button onclick="goHome()">← Назад</button>
+<div class="meal">
+<h3>➕ Добавить блюдо</h3>
+<input id="foodName" placeholder="Название">
+<textarea id="foodComp" placeholder="Компоненты и граммы"></textarea>
+<select id="foodMeal">
+  <option value="Завтрак">Завтрак</option>
+  <option value="Обед">Обед</option>
+  <option value="Ужин">Ужин</option>
+</select>
+<button onclick="addFood()">Добавить</button>
 </div>
 
-<!-- ========== ADD FOOD ========== -->
-<div id="addFood" class="screen">
-  <h2>Новое блюдо</h2>
-
-  <input id="foodName" placeholder="Название блюда">
-
-  <textarea id="foodComponents"
-    placeholder="Компоненты и граммовки
-Например:
-Курица 150г
-Рис 100г"></textarea>
-
-  <button onclick="saveFood()">Сохранить</button>
-  <button onclick="openScreen('food')">Отмена</button>
+<button onclick="goHome()">← Назад</button>
 </div>
 
-<!-- ========== WORKOUT ========== -->
+<!-- ================= ТРЕНИРОВКИ ================= -->
 <div id="workout" class="screen">
-  <h2>Тренировки</h2>
-  <p>Добавим позже</p>
-  <button onclick="goHome()">← Назад</button>
+<h2>Тренировки</h2>
+
+<div id="days"></div>
+
+<div class="day">
+<h3>➕ Добавить упражнение</h3>
+<input id="exName" placeholder="Название">
+<input id="exSets" type="number" placeholder="Подходы">
+<select id="exDay">
+  <option value="Понедельник">Понедельник</option>
+  <option value="Среда">Среда</option>
+  <option value="Пятница">Пятница</option>
+</select>
+<button onclick="addExercise()">Добавить</button>
 </div>
 
-<!-- ========== STATS ========== -->
+<button onclick="goHome()">← Назад</button>
+</div>
+
+<!-- ================= STATS ================= -->
 <div id="stats" class="screen">
-  <h2>Статистика</h2>
-  <p>Добавим позже</p>
-  <button onclick="goHome()">← Назад</button>
+<h2>Статистика</h2>
+<p>Будет позже</p>
+<button onclick="goHome()">← Назад</button>
 </div>
 
 <script>
 Telegram.WebApp.ready();
 
 /* ===== НАВИГАЦИЯ ===== */
-function openScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+function openScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-
-function goHome() {
-  openScreen('home');
-}
+function goHome(){ openScreen('home'); }
 
 /* ===== ЕДА ===== */
-let currentMeal = '';
+let foods = JSON.parse(localStorage.getItem('foods')||'[]');
 
-function openAddFood(meal) {
-  currentMeal = meal;
-  foodName.value = '';
-  foodComponents.value = '';
-  openScreen('addFood');
-}
+function renderFood(){
+  const meals = {Завтрак:[],Обед:[],Ужин:[]};
+  foods.forEach(f=>meals[f.meal].push(f));
 
-function saveFood() {
-  if (!foodName.value) return;
-
-  const data = {
-    name: foodName.value,
-    components: foodComponents.value
-  };
-
-  const list = JSON.parse(localStorage.getItem(currentMeal) || '[]');
-  list.push(data);
-  localStorage.setItem(currentMeal, JSON.stringify(list));
-
-  renderFood();
-  openScreen('food');
-}
-
-function renderFood() {
-  ['breakfast','lunch','dinner'].forEach(meal => {
-    const box = document.getElementById(meal);
-    box.innerHTML = '';
-
-    const list = JSON.parse(localStorage.getItem(meal) || '[]');
-    list.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'food-item';
-      div.innerHTML = `<b>${item.name}</b><br><small>${item.components.replace(/\n/g,'<br>')}</small>`;
-      box.appendChild(div);
+  mealsDiv.innerHTML='';
+  for(let m in meals){
+    const div=document.createElement('div');
+    div.className='meal';
+    div.innerHTML=`<h3>${m}</h3>`;
+    meals[m].forEach((f,i)=>{
+      div.innerHTML+=`
+      <div class="food-item">
+        <input type="checkbox" ${f.done?'checked':''}
+        onchange="toggleFood(${i})">
+        <div>
+          <b>${f.name}</b><br>
+          <small>${f.comp}</small>
+        </div>
+      </div>`;
     });
-  });
+    mealsDiv.appendChild(div);
+  }
 }
+
+function addFood(){
+  if(!foodName.value) return;
+  foods.push({
+    name:foodName.value,
+    comp:foodComp.value,
+    meal:foodMeal.value,
+    done:false
+  });
+  localStorage.setItem('foods',JSON.stringify(foods));
+  foodName.value=''; foodComp.value='';
+  renderFood();
+}
+
+function toggleFood(i){
+  foods[i].done=!foods[i].done;
+  localStorage.setItem('foods',JSON.stringify(foods));
+}
+
 renderFood();
 
-/* ===== ВОДА ===== */
-let water = Number(localStorage.getItem('water')) || 0;
-const goal = 2000;
+/* ===== ТРЕНИРОВКИ ===== */
+let exercises = JSON.parse(localStorage.getItem('ex')||'[]');
 
-function updateWater() {
-  waterDone.textContent = water;
-  waterLeft.textContent = Math.max(goal - water, 0);
+function renderEx(){
+  const d={Понедельник:[],Среда:[],Пятница:[]};
+  exercises.forEach(e=>d[e.day].push(e));
+  days.innerHTML='';
+  for(let day in d){
+    const div=document.createElement('div');
+    div.className='day';
+    div.innerHTML=`<h3>${day}</h3>`;
+    d[day].forEach((e,i)=>{
+      let done=e.done||0;
+      let left=e.sets-done;
+      div.innerHTML+=`
+      <b>${e.name}</b> — Осталось ${left}
+      <div class="sets">
+        ${Array.from({length:e.sets}).map((_,s)=>`
+        <input type="checkbox" ${s<done?'checked':''}
+        onchange="toggleSet(${i},${s})">`).join('')}
+      </div>`;
+    });
+    days.appendChild(div);
+  }
 }
 
-function addWater() {
-  const v = Number(waterInput.value);
-  if (!v) return;
-  water += v;
-  localStorage.setItem('water', water);
-  waterInput.value = '';
-  updateWater();
+function addExercise(){
+  if(!exName.value||!exSets.value) return;
+  exercises.push({
+    name:exName.value,
+    sets:+exSets.value,
+    day:exDay.value,
+    done:0
+  });
+  localStorage.setItem('ex',JSON.stringify(exercises));
+  exName.value=''; exSets.value='';
+  renderEx();
 }
-updateWater();
+
+function toggleSet(i,s){
+  exercises[i].done=s+1;
+  localStorage.setItem('ex',JSON.stringify(exercises));
+  renderEx();
+}
+
+renderEx();
 </script>
 
 </body>
