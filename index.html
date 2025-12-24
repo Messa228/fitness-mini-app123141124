@@ -10,226 +10,278 @@ content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f5f5f5;
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
 }
 
-.screen{
-  display:none;
-  position:fixed;
-  inset:0;
-  padding:16px;
-  background:#f5f5f5;
-  overflow-y:auto;
+/* ===== ЭКРАНЫ ===== */
+.screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #f5f5f5;
+  padding: 16px;
+  overflow-y: auto;
 }
-.screen.active{display:block}
+.screen.active { display: block; }
 
-.home-btn{
-  height:33.33vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:26px;
-  background:white;
-  border-bottom:1px solid #ddd;
-  cursor:pointer;
+h2, h3 { margin-top: 0; }
+
+button {
+  padding: 10px;
+  font-size: 16px;
+  margin-top: 8px;
 }
 
-.section{
-  background:white;
-  padding:12px;
-  margin-bottom:16px;
-  border-radius:10px;
+/* ===== ГЛАВНЫЙ ===== */
+#home {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.home-btn {
+  flex: 1;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border-bottom: 1px solid #ddd;
 }
 
-.item{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px;
-  border-bottom:1px solid #eee;
-  cursor:pointer;
+/* ===== ЕДА ===== */
+.section {
+  background: white;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 8px;
 }
 
-.big-check{
-  width:26px;
-  height:26px;
+.food-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
-.plus{
-  font-size:26px;
-  text-align:center;
-  cursor:pointer;
-  padding:10px;
+.food-item span {
+  margin-left: 10px;
+  cursor: pointer;
 }
 
-button{
-  padding:10px;
-  font-size:16px;
-  margin-top:10px;
-  width:100%;
+/* ===== ЧЕКБОКС ===== */
+input[type="checkbox"] {
+  width: 22px;
+  height: 22px;
 }
 
-.progress{
-  height:14px;
-  background:#ddd;
-  border-radius:10px;
-  overflow:hidden;
+/* ===== ВОДА ===== */
+.progress {
+  height: 16px;
+  background: #ddd;
+  border-radius: 8px;
+  overflow: hidden;
 }
-.progress div{
-  height:100%;
-  background:#4CAF50;
+.progress div {
+  height: 100%;
+  background: #4CAF50;
+  width: 0%;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ============ HOME ============ -->
+<!-- ===== ГЛАВНЫЙ ===== -->
 <div id="home" class="screen active">
   <div class="home-btn" onclick="openScreen('food')">🍽 ЕДА</div>
   <div class="home-btn" onclick="openScreen('workout')">🏋️ ТРЕНИРОВКИ</div>
   <div class="home-btn" onclick="openScreen('stats')">📊 СТАТИСТИКА</div>
 </div>
 
-<!-- ============ FOOD ============ -->
+<!-- ===== ЕДА ===== -->
 <div id="food" class="screen">
-  <h2>Еда</h2>
+<h2>Еда</h2>
 
-  <div id="meals"></div>
+<div id="meals"></div>
 
-  <div class="section">
-    <h3>💧 Вода <span onclick="editWater()">✏️</span></h3>
-    <p>Цель: <span id="waterGoal">2000</span> мл</p>
-    <input type="number" id="waterInput" placeholder="Сколько выпил">
-    <button onclick="addWater()">+</button>
-    <button onclick="removeWater()">−</button>
-    <p>Выпито: <span id="waterDone">0</span></p>
-    <div class="progress"><div id="waterBar"></div></div>
-  </div>
+<!-- ВОДА -->
+<div class="section">
+<h3>Вода ✏️</h3>
 
-  <button onclick="goHome()">← Назад</button>
+<input type="number" id="waterGoalInput" placeholder="Цель (мл)">
+<button onclick="setWaterGoal()">Сохранить цель</button>
+
+<br><br>
+<input type="number" id="waterAdd" placeholder="Выпил (мл)">
+<button onclick="addWater()">+</button>
+
+<p>Выпито: <span id="waterDone">0</span> мл</p>
+<p>Осталось: <span id="waterLeft">0</span> мл</p>
+
+<div class="progress"><div id="waterBar"></div></div>
+
+<button onclick="resetWater()">Сбросить воду</button>
 </div>
 
-<!-- ============ FOOD EDIT ============ -->
-<div id="foodEdit" class="screen">
-  <h2>Блюдо</h2>
-  <input id="foodName" placeholder="Название">
-  <textarea id="foodComp" placeholder="Компоненты и граммовки"></textarea>
-  <button onclick="saveFood()">Сохранить</button>
-  <button onclick="deleteFood()">Удалить</button>
-  <button onclick="openScreen('food')">← Назад</button>
+<button onclick="goHome()">← Назад</button>
 </div>
 
-<!-- ============ WORKOUT ============ -->
+<!-- ===== РЕДАКТОР БЛЮДА ===== -->
+<div id="foodEditor" class="screen">
+<h2>Редактор блюда</h2>
+
+<input id="foodName" placeholder="Название">
+<br><br>
+<textarea id="foodComp" placeholder="Компоненты и граммы"></textarea>
+
+<br>
+<button onclick="saveFood()">Сохранить</button>
+<button onclick="deleteFood()">Удалить</button>
+<button onclick="openScreen('food')">← Назад</button>
+</div>
+
+<!-- ===== ТРЕНИРОВКИ ===== -->
 <div id="workout" class="screen">
-  <h2>Тренировки</h2>
-  <div id="days"></div>
-  <button onclick="goHome()">← Назад</button>
+<h2>Тренировки</h2>
+<p>Добавим позже стабильно</p>
+<button onclick="goHome()">← Назад</button>
 </div>
 
-<!-- ============ WORKOUT EDIT ============ -->
-<div id="workoutEdit" class="screen">
-  <h2>Упражнение</h2>
-  <input id="exName" placeholder="Название">
-  <input id="exSets" placeholder="Подходы">
-  <button onclick="saveExercise()">Сохранить</button>
-  <button onclick="deleteExercise()">Удалить</button>
-  <button onclick="openScreen('workout')">← Назад</button>
-</div>
-
-<!-- ============ STATS ============ -->
+<!-- ===== СТАТИСТИКА ===== -->
 <div id="stats" class="screen">
-  <h2>Статистика</h2>
-  <button onclick="goHome()">← Назад</button>
+<h2>Статистика</h2>
+<p>Будет позже</p>
+<button onclick="goHome()">← Назад</button>
 </div>
 
 <script>
 Telegram.WebApp.ready();
 
 /* ===== НАВИГАЦИЯ ===== */
-function openScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+function openScreen(id) {
+  document.querySelectorAll('.screen')
+    .forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-function goHome(){openScreen('home')}
+function goHome(){ openScreen('home'); }
 
-/* ===== ЕДА ===== */
-let currentFood=null;
-let meals=JSON.parse(localStorage.getItem('meals'))||{
-  breakfast:[],lunch:[],dinner:[]
+/* ===== ДАННЫЕ ===== */
+let meals = JSON.parse(localStorage.getItem('meals')) || {
+  breakfast: [], lunch: [], dinner: []
 };
+let currentMeal = '';
+let currentIndex = null;
 
+/* ===== РЕНДЕР ЕДЫ ===== */
 function renderMeals(){
-  mealsDiv.innerHTML='';
-  for(let m in meals){
-    let block=`<div class="section"><h3>${m}</h3>`;
-    meals[m].forEach((f,i)=>{
-      block+=`
-      <div class="item" onclick="editFood('${m}',${i})">
-        ${f.name}
-        <input type="checkbox" class="big-check" ${f.done?'checked':''}>
-      </div>`;
-    });
-    block+=`<div class="plus" onclick="newFood('${m}')">＋</div></div>`;
-    mealsDiv.innerHTML+=block;
-  }
-}
-const mealsDiv=document.getElementById('meals');
+  const names = {
+    breakfast:'Завтрак',
+    lunch:'Обед',
+    dinner:'Ужин'
+  };
+  mealsDiv = document.getElementById('meals');
+  mealsDiv.innerHTML = '';
 
-function newFood(meal){
-  currentFood={meal,index:null};
-  foodName.value='';
-  foodComp.value='';
-  openScreen('foodEdit');
-}
-function editFood(meal,index){
-  currentFood={meal,index};
-  const f=meals[meal][index];
-  foodName.value=f.name;
-  foodComp.value=f.comp;
-  openScreen('foodEdit');
-}
-function saveFood(){
-  const f={name:foodName.value,comp:foodComp.value,done:false};
-  if(currentFood.index==null) meals[currentFood.meal].push(f);
-  else meals[currentFood.meal][currentFood.index]=f;
-  localStorage.setItem('meals',JSON.stringify(meals));
-  openScreen('food'); renderMeals();
-}
-function deleteFood(){
-  meals[currentFood.meal].splice(currentFood.index,1);
-  localStorage.setItem('meals',JSON.stringify(meals));
-  openScreen('food'); renderMeals();
+  for(let key in meals){
+    const sec = document.createElement('div');
+    sec.className = 'section';
+    sec.innerHTML = `<h3>${names[key]}</h3>`;
+
+    meals[key].forEach((f,i)=>{
+      const row = document.createElement('div');
+      row.className = 'food-item';
+
+      row.innerHTML = `
+        <input type="checkbox" ${f.done?'checked':''}
+          onchange="toggleDone('${key}',${i})">
+        <span onclick="editFood('${key}',${i})">${f.name}</span>
+      `;
+      sec.appendChild(row);
+    });
+
+    const add = document.createElement('button');
+    add.textContent = '+ Добавить';
+    add.onclick = ()=>addFood(key);
+    sec.appendChild(add);
+
+    mealsDiv.appendChild(sec);
+  }
 }
 renderMeals();
 
-/* ===== ВОДА ===== */
-let water=Number(localStorage.getItem('water'))||0;
-let goal=Number(localStorage.getItem('goal'))||2000;
+/* ===== ЕДА ЛОГИКА ===== */
+function addFood(meal){
+  currentMeal = meal;
+  currentIndex = null;
+  foodName.value='';
+  foodComp.value='';
+  openScreen('foodEditor');
+}
 
-function updateWater(){
-  waterDone.innerText=water;
-  waterGoal.innerText=goal;
-  waterBar.style.width=Math.min(water/goal*100,100)+'%';
+function editFood(meal,i){
+  currentMeal = meal;
+  currentIndex = i;
+  foodName.value = meals[meal][i].name;
+  foodComp.value = meals[meal][i].comp;
+  openScreen('foodEditor');
+}
+
+function saveFood(){
+  const obj = {
+    name: foodName.value,
+    comp: foodComp.value,
+    done: false
+  };
+  if(currentIndex===null) meals[currentMeal].push(obj);
+  else meals[currentMeal][currentIndex]=obj;
+
+  localStorage.setItem('meals',JSON.stringify(meals));
+  renderMeals();
+  openScreen('food');
+}
+
+function deleteFood(){
+  if(currentIndex!==null){
+    meals[currentMeal].splice(currentIndex,1);
+    localStorage.setItem('meals',JSON.stringify(meals));
+  }
+  renderMeals();
+  openScreen('food');
+}
+
+function toggleDone(meal,i){
+  meals[meal][i].done = !meals[meal][i].done;
+  localStorage.setItem('meals',JSON.stringify(meals));
+}
+
+/* ===== ВОДА ===== */
+let waterGoal = Number(localStorage.getItem('waterGoal'))||2000;
+let water = Number(localStorage.getItem('water'))||0;
+
+function setWaterGoal(){
+  waterGoal = Number(waterGoalInput.value);
+  localStorage.setItem('waterGoal',waterGoal);
+  updateWater();
 }
 function addWater(){
-  water+=Number(waterInput.value||0);
+  water += Number(waterAdd.value);
   localStorage.setItem('water',water);
-  waterInput.value='';
+  waterAdd.value='';
   updateWater();
 }
-function removeWater(){
-  water=Math.max(0,water-Number(waterInput.value||0));
-  localStorage.setItem('water',water);
+function resetWater(){
+  water = 0;
+  localStorage.setItem('water',0);
   updateWater();
 }
-function editWater(){
-  const g=prompt('Цель воды (мл)',goal);
-  if(g){goal=Number(g);localStorage.setItem('goal',goal);updateWater();}
+function updateWater(){
+  waterDone.innerText = water;
+  waterLeft.innerText = Math.max(waterGoal-water,0);
+  waterBar.style.width =
+    Math.min(water/waterGoal*100,100)+'%';
 }
 updateWater();
 </script>
