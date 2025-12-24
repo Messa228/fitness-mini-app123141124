@@ -2,8 +2,9 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<!-- Запрет масштабирования -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>Fitness Mini App</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -20,69 +21,77 @@ body {
 /* ===== ЭКРАНЫ ===== */
 .screen {
   display: none;
+  position: fixed;
+  inset: 0;
   padding: 16px;
-  min-height: 100vh;
+  overflow-y: auto;
+  background: #f2f2f2;
 }
 
 .screen.active {
   display: block;
 }
 
-/* ===== ГЛАВНЫЙ ===== */
+/* ===== ГЛАВНАЯ ===== */
+#home {
+  display: flex;
+  flex-direction: column;
+}
+
 .home-btn {
-  height: 33vh;
+  flex: 1;
   background: white;
   margin-bottom: 10px;
+  border-radius: 12px;
+  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  border-radius: 12px;
   cursor: pointer;
 }
 
 /* ===== СЕКЦИИ ===== */
 .section {
   background: white;
+  border-radius: 12px;
   padding: 12px;
   margin-bottom: 16px;
-  border-radius: 12px;
 }
 
-.section-header {
+.section-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .plus {
-  font-size: 26px;
+  font-size: 28px;
   cursor: pointer;
 }
 
 /* ===== БЛЮДА ===== */
-.food-item {
+.food-item, .exercise-item {
   display: flex;
   align-items: center;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
-.food-item input[type="checkbox"] {
-  width: 24px;
-  height: 24px;
+.checkbox {
+  width: 28px;
+  height: 28px;
   margin-right: 10px;
 }
 
 /* ===== ВОДА ===== */
 .progress {
-  height: 12px;
+  height: 14px;
   background: #ddd;
   border-radius: 10px;
   overflow: hidden;
   margin-top: 10px;
 }
 
-.progress-inner {
+.progress-fill {
   height: 100%;
   width: 0%;
   background: #4caf50;
@@ -90,9 +99,9 @@ body {
 
 /* ===== КНОПКИ ===== */
 button {
-  padding: 10px;
-  margin-top: 10px;
   width: 100%;
+  padding: 12px;
+  margin-top: 10px;
   font-size: 16px;
 }
 </style>
@@ -100,7 +109,7 @@ button {
 
 <body>
 
-<!-- ===== ГЛАВНАЯ ===== -->
+<!-- ===== HOME ===== -->
 <div id="home" class="screen active">
   <div class="home-btn" onclick="openScreen('food')">🍽 ЕДА</div>
   <div class="home-btn" onclick="openScreen('workout')">🏋️ ТРЕНИРОВКИ</div>
@@ -109,79 +118,64 @@ button {
 
 <!-- ===== ЕДА ===== -->
 <div id="food" class="screen">
+  <h2>Еда</h2>
 
+  <div id="foodSections"></div>
+
+  <!-- ВОДА -->
   <div class="section">
-    <div class="section-header">
-      <h3>Завтрак</h3>
-      <div class="plus" onclick="addFood('breakfast')">+</div>
+    <div class="section-title">
+      <h3>Вода</h3>
+      <span class="plus" onclick="setWaterGoal()">✏️</span>
     </div>
-    <div id="breakfast"></div>
-  </div>
 
-  <div class="section">
-    <div class="section-header">
-      <h3>Обед</h3>
-      <div class="plus" onclick="addFood('lunch')">+</div>
-    </div>
-    <div id="lunch"></div>
-  </div>
-
-  <div class="section">
-    <div class="section-header">
-      <h3>Ужин</h3>
-      <div class="plus" onclick="addFood('dinner')">+</div>
-    </div>
-    <div id="dinner"></div>
-  </div>
-
-  <div class="section">
-    <h3>Вода</h3>
-    <input type="number" id="waterInput" placeholder="мл">
+    <input type="number" id="waterInput" placeholder="Сколько выпил (мл)">
     <button onclick="addWater()">+</button>
+
     <p>Выпито: <span id="waterDone">0</span> мл</p>
+    <p>Осталось: <span id="waterLeft">0</span> мл</p>
+
     <div class="progress">
-      <div id="waterBar" class="progress-inner"></div>
+      <div id="waterBar" class="progress-fill"></div>
     </div>
   </div>
 
-  <button onclick="goHome()">← Назад</button>
+  <button onclick="openScreen('home')">← Назад</button>
+</div>
+
+<!-- ===== РЕДАКТОР БЛЮДА ===== -->
+<div id="foodEditor" class="screen">
+  <h2>Блюдо</h2>
+
+  <input id="foodName" placeholder="Название блюда">
+  <textarea id="foodComp" placeholder="Состав и граммовки"></textarea>
+
+  <button onclick="saveFood()">Сохранить</button>
+  <button onclick="openScreen('food')">Отмена</button>
 </div>
 
 <!-- ===== ТРЕНИРОВКИ ===== -->
 <div id="workout" class="screen">
+  <h2>Тренировки</h2>
+  <div id="workoutSections"></div>
+  <button onclick="openScreen('home')">← Назад</button>
+</div>
 
-  <div class="section">
-    <div class="section-header">
-      <h3>Понедельник</h3>
-      <div class="plus" onclick="addExercise('mon')">+</div>
-    </div>
-    <div id="mon"></div>
-  </div>
+<!-- ===== РЕДАКТОР УПРАЖНЕНИЯ ===== -->
+<div id="workoutEditor" class="screen">
+  <h2>Упражнение</h2>
 
-  <div class="section">
-    <div class="section-header">
-      <h3>Среда</h3>
-      <div class="plus" onclick="addExercise('wed')">+</div>
-    </div>
-    <div id="wed"></div>
-  </div>
+  <input id="exName" placeholder="Название упражнения">
+  <input id="exSets" type="number" placeholder="Кол-во подходов">
 
-  <div class="section">
-    <div class="section-header">
-      <h3>Пятница</h3>
-      <div class="plus" onclick="addExercise('fri')">+</div>
-    </div>
-    <div id="fri"></div>
-  </div>
-
-  <button onclick="goHome()">← Назад</button>
+  <button onclick="saveExercise()">Сохранить</button>
+  <button onclick="openScreen('workout')">Отмена</button>
 </div>
 
 <!-- ===== СТАТИСТИКА ===== -->
 <div id="stats" class="screen">
   <h2>Статистика</h2>
-  <p>Добавим позже</p>
-  <button onclick="goHome()">← Назад</button>
+  <button onclick="openScreen('home')">← Назад</button>
 </div>
 
 <script>
@@ -192,25 +186,59 @@ function openScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
-function goHome() { openScreen('home'); }
 
 /* ===== ЕДА ===== */
-function addFood(type) {
-  const name = prompt('Название блюда');
-  if (!name) return;
+const meals = ['Завтрак', 'Обед', 'Ужин'];
+let currentMeal = '';
 
-  const div = document.createElement('div');
-  div.className = 'food-item';
-  div.innerHTML = `
-    <input type="checkbox">
-    <span>${name}</span>
-  `;
-  document.getElementById(type).appendChild(div);
+function renderFood() {
+  const box = document.getElementById('foodSections');
+  box.innerHTML = '';
+
+  meals.forEach(meal => {
+    const items = JSON.parse(localStorage.getItem('food_' + meal)) || [];
+
+    box.innerHTML += `
+      <div class="section">
+        <div class="section-title">
+          <h3>${meal}</h3>
+          <span class="plus" onclick="addFood('${meal}')">+</span>
+        </div>
+        ${items.map((f,i)=>`
+          <div class="food-item">
+            <input type="checkbox" class="checkbox">
+            ${f.name}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  });
+}
+
+function addFood(meal) {
+  currentMeal = meal;
+  foodName.value = '';
+  foodComp.value = '';
+  openScreen('foodEditor');
+}
+
+function saveFood() {
+  const list = JSON.parse(localStorage.getItem('food_' + currentMeal)) || [];
+  list.push({ name: foodName.value, comp: foodComp.value });
+  localStorage.setItem('food_' + currentMeal, JSON.stringify(list));
+  renderFood();
+  openScreen('food');
 }
 
 /* ===== ВОДА ===== */
+let goal = Number(localStorage.getItem('waterGoal')) || 2000;
 let water = Number(localStorage.getItem('water')) || 0;
-const goal = 2000;
+
+function updateWater() {
+  waterDone.textContent = water;
+  waterLeft.textContent = Math.max(goal - water, 0);
+  waterBar.style.width = Math.min(water / goal * 100, 100) + '%';
+}
 
 function addWater() {
   const v = Number(waterInput.value);
@@ -221,26 +249,61 @@ function addWater() {
   updateWater();
 }
 
-function updateWater() {
-  waterDone.innerText = water;
-  waterBar.style.width = Math.min(water / goal * 100, 100) + '%';
+function setWaterGoal() {
+  const g = prompt('Сколько воды в день (мл)?', goal);
+  if (!g) return;
+  goal = Number(g);
+  localStorage.setItem('waterGoal', goal);
+  updateWater();
 }
-updateWater();
 
 /* ===== ТРЕНИРОВКИ ===== */
-function addExercise(day) {
-  const name = prompt('Название упражнения');
-  const sets = prompt('Количество подходов');
-  if (!name || !sets) return;
+const days = ['Понедельник', 'Среда', 'Пятница'];
+let currentDay = '';
 
-  const div = document.createElement('div');
-  div.className = 'food-item';
-  div.innerHTML = `
-    <input type="checkbox">
-    <span>${name} (${sets} подходов)</span>
-  `;
-  document.getElementById(day).appendChild(div);
+function renderWorkout() {
+  const box = document.getElementById('workoutSections');
+  box.innerHTML = '';
+
+  days.forEach(day => {
+    const ex = JSON.parse(localStorage.getItem('workout_' + day)) || [];
+
+    box.innerHTML += `
+      <div class="section">
+        <div class="section-title">
+          <h3>${day}</h3>
+          <span class="plus" onclick="addExercise('${day}')">+</span>
+        </div>
+        ${ex.map(e=>`
+          <div class="exercise-item">
+            <input type="checkbox" class="checkbox">
+            ${e.name} (${e.sets} подходов)
+          </div>
+        `).join('')}
+      </div>
+    `;
+  });
 }
+
+function addExercise(day) {
+  currentDay = day;
+  exName.value = '';
+  exSets.value = '';
+  openScreen('workoutEditor');
+}
+
+function saveExercise() {
+  const list = JSON.parse(localStorage.getItem('workout_' + currentDay)) || [];
+  list.push({ name: exName.value, sets: exSets.value });
+  localStorage.setItem('workout_' + currentDay, JSON.stringify(list));
+  renderWorkout();
+  openScreen('workout');
+}
+
+/* INIT */
+renderFood();
+renderWorkout();
+updateWater();
 </script>
 
 </body>
