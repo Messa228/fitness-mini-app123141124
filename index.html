@@ -100,39 +100,56 @@ input,textarea,button{
   <div class="big-btn" onclick="openScreen('stats')">📊 СТАТИСТИКА</div>
 </div>
 
-<!-- FOOD -->
+<!-- ================= ЕДА ================= -->
 <div id="food" class="screen">
   <h2>Еда</h2>
 
-  <div class="section">
-    <h3>Завтрак <span class="plus" onclick="addFood('breakfast')">+</span></h3>
-    <div id="breakfast"></div>
+  <!-- ===== ЗАВТРАК ===== -->
+  <div class="meal-block">
+    <h3>Завтрак</h3>
+    <div id="breakfastList"></div>
+    <div class="add-btn" onclick="openAddFood('breakfast')">+</div>
   </div>
 
-  <div class="section">
-    <h3>Обед <span class="plus" onclick="addFood('lunch')">+</span></h3>
-    <div id="lunch"></div>
+  <!-- ===== ОБЕД ===== -->
+  <div class="meal-block">
+    <h3>Обед</h3>
+    <div id="lunchList"></div>
+    <div class="add-btn" onclick="openAddFood('lunch')">+</div>
   </div>
 
-  <div class="section">
-    <h3>Ужин <span class="plus" onclick="addFood('dinner')">+</span></h3>
-    <div id="dinner"></div>
+  <!-- ===== УЖИН ===== -->
+  <div class="meal-block">
+    <h3>Ужин</h3>
+    <div id="dinnerList"></div>
+    <div class="add-btn" onclick="openAddFood('dinner')">+</div>
   </div>
 
-  <div class="section">
-    <h3>Вода ✏️</h3>
-    <input type="number" id="waterGoal" placeholder="Цель мл">
-    <input type="number" id="waterAdd" placeholder="Сколько выпил">
-    <button onclick="addWater()">+</button>
-    <button onclick="resetWater()">Сбросить</button>
-    <p><span id="waterText"></span></p>
-    <div class="progress">
-      <div class="progress-inner" id="waterBar"></div>
+  <!-- ===== ВОДА ===== -->
+  <div class="water-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>Вода</h3>
+      <span onclick="editWaterGoal()" style="cursor:pointer;">✏️</span>
     </div>
+
+    <p>Цель: <span id="waterGoalText">2000</span> мл</p>
+
+    <input type="number" id="waterInput" placeholder="Сколько выпил (мл)">
+    <button onclick="addWater()">+</button>
+
+    <div class="water-progress">
+      <div id="waterProgress"></div>
+    </div>
+
+    <p>Выпито: <span id="waterDone">0</span> мл</p>
+    <p>Осталось: <span id="waterLeft">2000</span> мл</p>
+
+    <button onclick="resetWater()">Сбросить воду</button>
   </div>
 
-  <button onclick="openScreen('home')">← Назад</button>
+  <button onclick="goHome()">← Назад</button>
 </div>
+
 
 <!-- FOOD EDITOR -->
 <div id="foodEditor" class="screen">
@@ -335,3 +352,4 @@ updateWater();
 </script>
 </body>
 </html>
+
